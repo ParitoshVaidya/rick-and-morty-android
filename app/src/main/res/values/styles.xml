@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="toolbar_title">
+        <item name="android:textSize">28sp</item>
+        <item name="fontFamily">@font/rick_and_morty_font</item>
+        <item name="android:letterSpacing">0.1</item>
+    </style>
+
+    <style name="details_title">
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/rick_and_morty_font</item>
+        <item name="android:letterSpacing">0.1</item>
+    </style>
+
+    <style name="details_text">
+        <item name="android:textSize">20sp</item>
+        <item name="fontFamily">@font/rick_and_morty_font</item>
+        <item name="android:letterSpacing">0.1</item>
+    </style>
+</resources>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Rick &amp; Morty</string>
+    <string name="search">Search</string>
+    <string name="characters">Characters</string>
+    <string name="character_details">Character Details</string>
+    <string name="gender">Gender</string>
+    <string name="status">Status</string>
+    <string name="location">Location</string>
+    <string name="no_data">No data available at the moment.</string>
+</resources>
