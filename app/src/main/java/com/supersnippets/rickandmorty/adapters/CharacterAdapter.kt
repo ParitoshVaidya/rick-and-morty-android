@@ -2,18 +2,17 @@ package com.supersnippets.rickandmorty.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.supersnippets.rickandmorty.databinding.ItemCharacterBinding
 import com.supersnippets.rickandmorty.interfaces.OnItemClickedListener
-import com.supersnippets.rickandmorty.models.CharactersDto
+import com.supersnippets.rickandmorty.models.CharacterDto
 
-class CharacterAdapter : RecyclerView.Adapter<CharacterAdapter.CharacterViewHolder>(), Filterable {
-    lateinit var searchableList: MutableList<CharactersDto>
-    lateinit var originalList: MutableList<CharactersDto>
-    lateinit var listener: OnItemClickedListener<CharactersDto>
+class CharacterAdapter :
+    PagingDataAdapter<CharacterDto, CharacterAdapter.CharacterViewHolder>(CharacterComparator) {
+    lateinit var listener: OnItemClickedListener<CharacterDto>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -22,47 +21,27 @@ class CharacterAdapter : RecyclerView.Adapter<CharacterAdapter.CharacterViewHold
     }
 
     override fun onBindViewHolder(holder: CharacterViewHolder, position: Int) {
-        val item = searchableList[position]
-        holder.bind(item)
+        holder.bind(getItem(position)!!)
     }
 
-    override fun getItemCount() = searchableList.size
-
-    fun setItems(items: List<CharactersDto>) {
-        this.searchableList = ArrayList(items)
-        this.originalList = ArrayList(items)
-    }
-
-    override fun getFilter(): Filter {
-        return object : Filter() {
-            private val filterResults = FilterResults()
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                searchableList.clear()
-                if (constraint.isNullOrBlank()) {
-                    searchableList.addAll(originalList)
-                } else {
-                    val searchResults =
-                        originalList.filter { it.name.toLowerCase().contains(constraint) }
-                    searchableList.addAll(searchResults)
-                }
-                return filterResults.also {
-                    it.values = searchableList
-                }
-            }
-
-            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                notifyDataSetChanged()
-            }
-        }
-    }
-
-    fun setOnItemClickListener(onItemClickListener: OnItemClickedListener<CharactersDto>) {
+    fun setOnItemClickListener(onItemClickListener: OnItemClickedListener<CharacterDto>) {
         listener = onItemClickListener
+    }
+
+    object CharacterComparator : DiffUtil.ItemCallback<CharacterDto>() {
+        override fun areItemsTheSame(oldItem: CharacterDto, newItem: CharacterDto): Boolean {
+            // Id is unique.
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: CharacterDto, newItem: CharacterDto): Boolean {
+            return oldItem == newItem
+        }
     }
 
     inner class CharacterViewHolder(private val viewBinding: ItemCharacterBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(item: CharactersDto) {
+        fun bind(item: CharacterDto) {
             viewBinding.txtName.text = item.name
             Picasso.get().load(item.image).into(viewBinding.image)
             viewBinding.itemLayout.setOnClickListener {

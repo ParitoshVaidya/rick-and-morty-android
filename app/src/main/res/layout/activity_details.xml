@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="charactersDto"
-            type="com.supersnippets.rickandmorty.models.CharactersDto" />
+            name="characterDto"
+            type="com.supersnippets.rickandmorty.models.CharacterDto" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -34,7 +34,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/rick_and_morty_font"
             android:letterSpacing="0.1"
-            android:text="@{charactersDto.name}"
+            android:text="@{characterDto.name}"
             android:textSize="22sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="@{charactersDto.status}"
+            android:text="@{characterDto.status}"
             android:textAlignment="textEnd"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/lblStatus"
@@ -83,7 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="@{charactersDto.gender}"
+            android:text="@{characterDto.gender}"
             android:textAlignment="textEnd"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/lblGender"
@@ -107,7 +107,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="@{charactersDto.location}"
+            android:text="@{characterDto.location}"
             android:textAlignment="textEnd"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/lblLocation"

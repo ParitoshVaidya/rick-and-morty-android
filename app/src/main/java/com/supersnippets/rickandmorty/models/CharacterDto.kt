@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class CharactersDto(
+data class CharacterDto(
     val id: Long?,
     val name: String,
     val image: String,

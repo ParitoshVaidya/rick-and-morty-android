@@ -5,17 +5,16 @@
 
 - Simple UI, Custom Font
 - MVVM Architecture
-- Live data
+- Flow
 - Data binding
-- Recycler View data filtering
-- Room db
 - Retrofit
 - Koin DI
+- Pagination v3
+- Pagination footer
 
 
-## Features that can be added with extra time
+## Features to be added
 
-- Pagination
 - Paginated data db storage and retrieval
 - Custom search page with API call
 - Custom font for Toolbar
@@ -24,6 +23,10 @@
 ## Screenshots
 
 ![Screenshots](./mobile_ui.png)
+
+![Screenshots](./mobile_ui_footer.png)
+
+![Screenshots](./mobile_ui_retry.png)
 
 
 

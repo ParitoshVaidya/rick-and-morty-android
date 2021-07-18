@@ -1,6 +1,6 @@
 package com.supersnippets.rickandmorty.models
 
-data class Origin(
+data class OriginJson(
     val name: String,
     val url: String
 )

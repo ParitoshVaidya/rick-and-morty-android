@@ -41,7 +41,7 @@ fun provideOkHttpClient(networkInterceptor: NetworkInterceptor): OkHttpClient {
         .newBuilder()
         .readTimeout(1, TimeUnit.MINUTES)
         .writeTimeout(1, TimeUnit.MINUTES)
-        .connectTimeout(1, TimeUnit.MINUTES)
+        .connectTimeout(20, TimeUnit.SECONDS)
         .addInterceptor(networkInterceptor)
         .addInterceptor(logging)
         .build()

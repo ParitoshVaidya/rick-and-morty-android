@@ -1,10 +1,10 @@
 package com.supersnippets.rickandmorty.helpers
 
-import com.supersnippets.rickandmorty.models.CharactersResponse
-import retrofit2.Call
+import com.supersnippets.rickandmorty.models.CharactersJson
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface ApiService {
     @GET("character")
-    fun getCharacters(): Call<CharactersResponse>
+    suspend fun getCharacters(@Query("page") page: Int?): CharactersJson
 }

@@ -1,7 +1,6 @@
 package com.supersnippets.rickandmorty.models
 
-data class Info(
-
+data class InfoJson(
     val count: Int,
     val pages: Int,
     val next: String,

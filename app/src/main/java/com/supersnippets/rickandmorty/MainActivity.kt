@@ -2,24 +2,24 @@ package com.supersnippets.rickandmorty
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.Observer
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.supersnippets.rickandmorty.adapters.CharacterAdapter
+import com.supersnippets.rickandmorty.adapters.LoadingStateAdapter
 import com.supersnippets.rickandmorty.databinding.ActivityMainBinding
 import com.supersnippets.rickandmorty.interfaces.OnItemClickedListener
-import com.supersnippets.rickandmorty.models.CharactersDto
-import org.koin.android.viewmodel.ext.android.viewModel
+import com.supersnippets.rickandmorty.models.CharacterDto
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity(), OnItemClickedListener<CharactersDto> {
+class MainActivity : AppCompatActivity(), OnItemClickedListener<CharacterDto> {
     private val characterViewModel by viewModel<CharacterViewModel>()
     private lateinit var binding: ActivityMainBinding
-    private lateinit var menuItem: MenuItem
-    private lateinit var searchView: SearchView
     private var characterAdapter = CharacterAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,65 +27,52 @@ class MainActivity : AppCompatActivity(), OnItemClickedListener<CharactersDto> {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.title = getString(R.string.characters)
-        characterViewModel.getCharacters()
 
-        characterViewModel.characters.observe(this, Observer {
-            println("data received " + it.size)
-            hideProgressBar()
-            if (it.isEmpty()) {
-                binding.message.text = getString(R.string.no_data)
-            } else {
-                binding.message.text = ""
-                binding.recyclerView.apply {
-                    characterAdapter.setItems(it)
-                    adapter = characterAdapter
-                    addItemDecoration(
-                        DividerItemDecoration(
-                            context,
-                            DividerItemDecoration.VERTICAL
-                        )
-                    )
-                    characterAdapter.setOnItemClickListener(this@MainActivity)
+        binding.recyclerView.apply {
+            adapter = characterAdapter.withLoadStateFooter(
+                footer = LoadingStateAdapter { characterAdapter.retry() }
+            )
+            characterAdapter.addLoadStateListener { loadState ->
+                binding.group.visibility = View.GONE
+                binding.progressBar.isVisible = false
+                if (characterAdapter.itemCount < 1) {
+                    if (loadState.refresh is LoadState.Loading || loadState.append is LoadState.Loading) {
+                        binding.progressBar.isVisible = true
+                    } else {
+                        binding.progressBar.isVisible = false
+
+                        val errorState = when {
+                            loadState.append is LoadState.Error -> loadState.append as LoadState.Error
+                            loadState.prepend is LoadState.Error -> loadState.prepend as LoadState.Error
+                            loadState.refresh is LoadState.Error -> loadState.refresh as LoadState.Error
+                            else -> null
+                        }
+                        errorState?.let {
+                            binding.group.visibility = View.VISIBLE
+                            binding.message.text = it.error.localizedMessage
+                        }
+                    }
                 }
             }
-        })
-    }
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            characterAdapter.setOnItemClickListener(this@MainActivity)
+            setHasFixedSize(true)
+        }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_search, menu)
-        menuItem = menu.findItem(R.id.item_search)
-        searchView = menuItem.actionView as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+        binding.btnRetry.setOnClickListener {
+            characterAdapter.retry()
+        }
+
+        lifecycleScope.launch {
+            characterViewModel.characters.collectLatest {
+                characterAdapter.submitData(it)
             }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                characterAdapter.filter.filter(newText)
-                return true
-            }
-        })
-
-        return true
-    }
-
-    override fun onItemClicked(dto: CharactersDto) {
-        val intent = Intent(this@MainActivity, DetailsActivity::class.java)
-        intent.putExtra("character", dto)
-        startActivity(intent)
-    }
-
-    override fun onBackPressed() {
-        if (!searchView.isIconified) {
-            menuItem.collapseActionView()
-            searchView.isIconified = true
-        } else {
-            super.onBackPressed()
         }
     }
 
-    private fun hideProgressBar() {
-        binding.progressBar.visibility = View.GONE
-        binding.recyclerView.visibility = View.VISIBLE
+    override fun onItemClicked(dto: CharacterDto) {
+        val intent = Intent(this@MainActivity, DetailsActivity::class.java)
+        intent.putExtra("character", dto)
+        startActivity(intent)
     }
 }
